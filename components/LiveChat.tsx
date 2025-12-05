@@ -46,9 +46,9 @@ const LiveChat: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 w-72 h-80 bg-zinc-950/90 backdrop-blur-md border border-zinc-800 rounded-lg flex flex-col shadow-2xl z-50 overflow-hidden">
+    <div className="h-full bg-zinc-900 border border-zinc-800 rounded-lg flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="p-3 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
+      <div className="p-3 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/30">
         <div className="flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-bold text-white uppercase tracking-wider">Trollbox Live</span>
@@ -78,7 +78,7 @@ const LiveChat: React.FC = () => {
       </div>
 
       {/* Input Placeholder */}
-      <div className="p-2 border-t border-zinc-800 bg-zinc-900/50">
+      <div className="p-2 border-t border-zinc-800 bg-zinc-950/30">
         <div className="relative">
             <input 
                 type="text" 

@@ -1,5 +1,5 @@
 export interface ChartDataPoint {
-  time: string;
+  time: number; // Unix timestamp in seconds
   value: number;
 }
 

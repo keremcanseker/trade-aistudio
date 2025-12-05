@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import OrderBook from './components/OrderBook';
 import PriceChart from './components/PriceChart';
@@ -22,10 +22,11 @@ const App: React.FC = () => {
     // Initial Data population
     const initialData: ChartDataPoint[] = [];
     let price = INITIAL_PRICE;
-    const now = new Date();
+    const nowSeconds = Math.floor(Date.now() / 1000);
     
-    for (let i = 50; i > 0; i--) {
-        const time = new Date(now.getTime() - i * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    // Generate 100 points of history
+    for (let i = 100; i > 0; i--) {
+        const time = nowSeconds - i;
         price = price + (Math.random() - 0.5) * VOLATILITY;
         initialData.push({ time, value: price });
     }
@@ -41,17 +42,22 @@ const App: React.FC = () => {
             // Update chart data
             setChartData(prevData => {
                 const newPoint = {
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                    time: Math.floor(Date.now() / 1000),
                     value: newPrice
                 };
-                // Keep max 60 points for performance
-                const newData = [...prevData.slice(1), newPoint];
+                
+                // Avoid duplicate timestamps if interval runs fast
+                if (prevData.length > 0 && prevData[prevData.length - 1].time === newPoint.time) {
+                    return prevData; 
+                }
+
+                // Keep max 200 points for performance
+                const newData = [...prevData, newPoint];
+                if (newData.length > 200) return newData.slice(newData.length - 200);
                 return newData;
             });
 
             // Check bets (Mock result logic)
-            // In a real app, this would be complex server logic. 
-            // Here we just randomly resolve bets older than 5 seconds for simulation fun
             setBets(currentBets => {
                 return currentBets.map(bet => {
                     if (bet.outcome) return bet; // Already settled
@@ -99,23 +105,30 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-zinc-950 text-zinc-100 font-sans flex flex-col overflow-hidden">
       <Header balance={balance} level={level} />
 
-      <main className="flex-1 p-4 grid grid-cols-1 md:grid-cols-12 gap-4 max-h-[calc(100vh-64px)] overflow-hidden">
+      {/* Main Grid: flex-1 ensures it fills remaining height. min-h-0 prevents overflow. */}
+      <main className="flex-1 p-3 md:p-4 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 min-h-0">
         
-        {/* Left Column: Market Data (3 cols) */}
-        <section className="hidden md:block md:col-span-3 h-full overflow-hidden">
-          <OrderBook currentPrice={currentPrice} />
+        {/* Left Column: Chat (3 cols) */}
+        <section className="hidden md:flex md:col-span-3 flex-col h-full min-h-0 overflow-hidden">
+          <LiveChat />
         </section>
 
-        {/* Center Column: Charts (6 cols) */}
-        <section className="col-span-1 md:col-span-6 h-[50vh] md:h-full flex flex-col">
-          <PriceChart data={chartData} currentPrice={currentPrice} />
+        {/* Center Column: Charts & OrderBook (6 cols) */}
+        {/* We use flex-col with gap. flex-[7] and flex-[3] distribute space while respecting the gap */}
+        <section className="col-span-1 md:col-span-6 flex flex-col h-full min-h-0 gap-3 md:gap-4">
+          <div className="flex-[7] min-h-0 relative">
+             <PriceChart data={chartData} currentPrice={currentPrice} />
+          </div>
+          <div className="flex-[3] min-h-0 relative">
+            <OrderBook currentPrice={currentPrice} />
+          </div>
         </section>
 
         {/* Right Column: Interaction (3 cols) */}
-        <section className="col-span-1 md:col-span-3 h-full overflow-y-auto custom-scrollbar">
+        <section className="col-span-1 md:col-span-3 flex flex-col h-full min-h-0 overflow-hidden">
           <TradingPanel 
             currentPrice={currentPrice} 
             onPlaceBet={handlePlaceBet} 
@@ -124,13 +137,12 @@ const App: React.FC = () => {
         </section>
 
       </main>
-
-      {/* Floating Elements */}
-      <LiveChat />
       
-      {/* Mobile-only Order Book Toggle (Hidden in desktop via grid) */}
-      <div className="md:hidden fixed bottom-20 left-4 bg-zinc-900 p-2 rounded-full border border-zinc-700 shadow-lg text-xs font-bold text-zinc-400">
-        Order Book
+      {/* Mobile-only Elements */}
+      <div className="md:hidden fixed bottom-4 right-4 z-50">
+        <div className="bg-emerald-600 p-3 rounded-full shadow-lg text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
       </div>
     </div>
   );

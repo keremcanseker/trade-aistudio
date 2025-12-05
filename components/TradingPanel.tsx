@@ -15,9 +15,9 @@ const TradingPanel: React.FC<TradingPanelProps> = ({ currentPrice, onPlaceBet, r
   const potentialReturn = (betAmount * 1.85).toFixed(2);
 
   return (
-    <div className="flex flex-col h-full gap-4">
+    <div className="flex flex-col h-full gap-4 min-h-0">
       {/* Main Trading Controls */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 flex flex-col gap-6">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 flex flex-col gap-6 shrink-0">
         <div className="flex items-center justify-between">
             <h2 className="text-white font-bold flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-emerald-500" />
@@ -110,8 +110,8 @@ const TradingPanel: React.FC<TradingPanelProps> = ({ currentPrice, onPlaceBet, r
       </div>
 
       {/* Recent Activity */}
-      <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden flex flex-col">
-        <div className="p-3 border-b border-zinc-800 flex items-center gap-2">
+      <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden flex flex-col min-h-0">
+        <div className="p-3 border-b border-zinc-800 flex items-center gap-2 shrink-0">
             <History className="w-4 h-4 text-zinc-400" />
             <h3 className="text-zinc-400 text-xs font-bold uppercase">Recent Predictions</h3>
         </div>
